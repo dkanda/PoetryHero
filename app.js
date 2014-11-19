@@ -1,6 +1,10 @@
 var hasGP = false;
     var repGP;
     var oldGP;
+    var lastWord = freqs[Math.floor(Math.random()*freqs.length)];
+    var tempo = 500;
+    var startTime;
+    var beatTolerance;
  
     function canGame() {
         return "getGamepads" in navigator;
@@ -9,7 +13,11 @@ var hasGP = false;
     function reportOnGamepad() {
         var retArr = [];
         var gp = navigator.getGamepads()[0];
- 
+ 	   if(((Date.now() - startTime) % tempo) > beatTolerance)
+	   {
+		//not on beat
+		return false;
+	   }
         for(var i=0;i<gp.buttons.length;i++) {
             if(gp.buttons[i].pressed){
                 retArr.push(i);
@@ -25,7 +33,8 @@ var hasGP = false;
     {
         if(!gamePadButtons.indexOf(0))//green button
         {
-            console.log("green button")
+	    lastWord = GetTheNextWord(lastWord);
+            $("#gamepadDisplay").html($("#gamepadDisplay").html()+ lastWord);
         }
         if(!gamePadButtons.indexOf(1))//green button
         {
@@ -44,6 +53,7 @@ var hasGP = false;
                 hasGP = true;
                 $("#gamepadPrompt").html("Gamepad connected!");
                 console.log("connection event");
+			startTime = Date.now();
                 repGP = window.setInterval(reportOnGamepad,50);
             });
  
